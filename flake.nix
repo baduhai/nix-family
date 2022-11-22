@@ -1,0 +1,60 @@
+{
+  description = "Nix hosts for the family";
+
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+
+    home-manager = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
+
+    home-manager-stable = {
+      url = "github:nix-community/home-manager/release-22.05";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
+    };
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = { self, nixpkgs, home-manager, nixpkgs-stable, home-manager-stable, nixos-hardware, deploy-rs, ... }: {
+    nixosConfigurations = {
+      bigghes = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/bigghes/configuration.nix
+          nixos-hardware.nixosModules.dell-xps-13-9360
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.sharpie = import ./users/sharpie_bigghes.nix;
+          }
+        ];
+      };
+    };
+
+    deploy = {
+      autoRollback = false;
+      magicRollback = false;
+      nodes = {
+        "bigghes" = {
+          hostname = "192.168.1.13";
+          profiles.system = {
+            user = "root";
+            sshUser = "root";
+            remoteBuild = true;
+            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.bigghes;
+          };
+        };
+      };
+    };
+  };
+}
