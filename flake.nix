@@ -9,13 +9,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
-
-    home-manager-stable = {
-      url = "github:nix-community/home-manager/release-22.05";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
-    };
-
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     deploy-rs = {
@@ -24,7 +17,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixpkgs-stable, home-manager-stable, nixos-hardware, deploy-rs, ... }: {
+  outputs = inputs @ { self, nixpkgs, home-manager, nixos-hardware, deploy-rs, ... }: {
     nixosConfigurations = {
       bigghes = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -44,12 +37,12 @@
     deploy = {
       autoRollback = false;
       magicRollback = false;
+      user = "root";
+      sshUser = "root";
       nodes = {
         "bigghes" = {
-          hostname = "192.168.1.13";
+          hostname = "100.78.234.41";
           profiles.system = {
-            user = "root";
-            sshUser = "root";
             remoteBuild = true;
             path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.bigghes;
           };

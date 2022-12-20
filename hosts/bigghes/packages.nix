@@ -27,7 +27,6 @@
     micro
     mpv
     neofetch
-    nix-software-center
     prismlauncher-qt5
     qbittorrent
     signal-desktop

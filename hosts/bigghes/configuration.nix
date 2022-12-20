@@ -10,6 +10,7 @@
 
   boot = {
     plymouth.enable = true;
+#     initrd.systemd.enable = true;
     kernelPackages = pkgs.linuxPackages_xanmod_latest;
     loader = {
       timeout = 1;
@@ -19,6 +20,14 @@
         efiSysMountPoint = "/boot/efi";
       };
     };
+    kernelParams = [
+      "quiet"
+      "splash"
+      "loglevel=3"
+      "udev.log_priority=3"
+      "rd.udev.log_level=3"
+      "rd.systemd.show_status=false"
+    ];
   };
 
   networking = {
