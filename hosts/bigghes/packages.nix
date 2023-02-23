@@ -22,6 +22,7 @@
     kate
     kolourpaint
     libreoffice-qt
+    logseq
     lutris
     mangohud
     micro
