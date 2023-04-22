@@ -9,6 +9,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    dotfiles = {
+      url = "github:baduhai/dotfiles";
+      flake = false;
+    };
+
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     deploy-rs = {

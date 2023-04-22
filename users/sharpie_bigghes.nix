@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   home = {
@@ -17,26 +17,16 @@
     };
     file = {
       # Dotfiles that can't be managed via home-manager
-      ".scripts/pfetch" = {
-        executable = true;
-        source = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/baduhai/dotfiles/master/scripts/pfetch";
-          sha256 = "UEfTG1XCuN2GlpPz1gdQ5mxgutlX2XL58rGOqtaUgV4=";
-        };
-      };
-      ".local/share/color-schemes/BreezeDarkNeutral.colors".source = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/baduhai/dotfiles/master/color-schemes/BreezeDarkNeutral.colors";
-        sha256 = "Fw5knhpV47HlgYvbHFzfi6M6Tk2DTlAuFUYc2WDDBc8=";
-      };
-      ".config/MangoHud/MangoHud.conf".source = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/baduhai/dotfiles/master/MangoHud/MangoHud.conf";
-        sha256 = "WCRsS6njtU4aR7tMiX8oWa2itJyy04Zp7wfwV20SLZs=";
-      };
+      ".config/starship.toml".source =
+        "${inputs.dotfiles}/.config/starship.toml";
+      ".config/MangoHud/MangoHud.conf".source =
+        "${inputs.dotfiles}/.config/MangoHud/MangoHud.conf";
       # Autostart programs
       # Fix flatpak fonts, themes, icons and cursor
       ".icons/breeze_cursors".source = config.lib.file.mkOutOfStoreSymlink "/run/current-system/sw/share/icons/breeze_cursors";
       ".local/share/flatpak/overrides/global".text = "[Context]\nfilesystems=/run/current-system/sw/share/X11/fonts:ro;~/.local/share/color-schemes:ro;xdg-config/gtk-3.0:ro;/nix/store:ro;~/.icons:ro";
     };
+    packages = with pkgs; [ nix-your-shell ];
   };
 
   fonts.fontconfig.enable = true; # Allow fonts installed by home-manager to be available session wide
@@ -66,7 +56,6 @@
   };
 
   programs = {
-    home-manager.enable = true;
     password-store = {
       enable = true;
       package = pkgs.pass-wayland;
@@ -75,6 +64,26 @@
       enable = true;
       historyFile = "~/.cache/bash_history";
     };
+    mangohud = {
+      enable = true;
+      enableSessionWide = true;
+    };
+    nix-index = {
+      enable = true;
+      enableFishIntegration = true;
+    };
+    starship = {
+      enable = true;
+      enableBashIntegration = true;
+      enableFishIntegration = true;
+    };
+    obs-studio = {
+      enable = true;
+      plugins = [
+        pkgs.obs-studio-plugins.obs-vkcapture
+        pkgs.obs-studio-plugins.obs-pipewire-audio-capture
+      ];
+    };
     micro = {
       enable = true;
       settings = {
@@ -82,54 +91,35 @@
         mkparents = true;
         scrollbar = true;
         tabstospaces = true;
-        tabsize = 2;
+        tabsize = 4;
+        colorscheme = "simple";
+        relativeruler = true;
       };
     };
     fish = {
       enable = true;
-      interactiveShellInit = "any-nix-shell fish --info-right | source";
-      loginShellInit = "any-nix-shell fish --info-right | source";
+      interactiveShellInit = "nix-your-shell fish | source";
+      loginShellInit = "nix-your-shell fish | source";
       shellAliases = {
-        d = "kitty +kitten diff";
         nano = "micro";
-        wget = "wget --hsts-file=\"$XDG_DATA_HOME/wget-hsts\"";
-        ssh = "kitty +kitten ssh";
+        wget = ''wget --hsts-file="$XDG_DATA_HOME/wget-hsts"'';
       };
       functions = {
-        fish_greeting = ''
-          set -x PF_INFO ascii title os kernel uptime wm memory palette
-          eval $HOME/.scripts/pfetch
-        '';
-        pacin = "nix-env -iA nixos.$argv";
-        pacre = "nix-env -e $argv";
+        fish_greeting = "";
+        tsh = "ssh -o RequestTTY=yes $argv tmux -u -CC new -A -s tmux-main";
       };
       shellInit = ''
-        set -g PF_INFO ascii title os kernel uptime wm memory palette
-        set -g theme_date_format "+%H:%M"
-        set -g theme_date_timezone Europe/Berlin
-        set -g theme_avoid_ambiguous_glyphs yes
-        set -g theme_color_scheme dark
-        set -g theme_nerd_fonts yes
-        set -g theme_display_git_default_branch yes
+        set -g -x NNN_OPTS H
         set -g -x FONTCONFIG_FILE ${pkgs.fontconfig.out}/etc/fonts/fonts.conf
       '';
-      plugins  = [
-        {
-          name = "bobthefish";
-          src = pkgs.fetchFromGitHub {
-            owner = "oh-my-fish";
-            repo = "theme-bobthefish";
-            rev = "2dcfcab653ae69ae95ab57217fe64c97ae05d8de";
-            sha256 = "jBbm0wTNZ7jSoGFxRkTz96QHpc5ViAw9RGsRBkCQEIU=";
-          };
-        }
+      plugins = [
         {
           name = "bang-bang";
           src = pkgs.fetchFromGitHub {
             owner = "oh-my-fish";
             repo = "plugin-bang-bang";
             rev = "f969c618301163273d0a03d002614d9a81952c1e";
-            sha256 = "A8ydBX4LORk+nutjHurqNNWFmW6LIiBPQcxS3x4nbeQ=";
+            sha256 = "sha256-A8ydBX4LORk+nutjHurqNNWFmW6LIiBPQcxS3x4nbeQ=";
           };
         }
         {
@@ -138,7 +128,7 @@
             owner = "PatrickF1";
             repo = "fzf.fish";
             rev = "v9.2";
-            sha256 = "XmRGe39O3xXmTvfawwT2mCwLIyXOlQm7f40mH5tzz+s=";
+            sha256 = "sha256-XmRGe39O3xXmTvfawwT2mCwLIyXOlQm7f40mH5tzz+s=";
           };
         }
       ];
