@@ -12,9 +12,7 @@
       name = "breeze_cursors";
       package = pkgs.breeze-icons;
     };
-    sessionVariables = {
-      EDITOR = "micro";
-    };
+    sessionVariables = { EDITOR = "micro"; };
     file = {
       # Dotfiles that can't be managed via home-manager
       ".config/starship.toml".source =
@@ -23,24 +21,35 @@
         "${inputs.dotfiles}/.config/MangoHud/MangoHud.conf";
       # Autostart programs
       # Fix flatpak fonts, themes, icons and cursor
-      ".icons/breeze_cursors".source = config.lib.file.mkOutOfStoreSymlink "/run/current-system/sw/share/icons/breeze_cursors";
-      ".local/share/flatpak/overrides/global".text = "[Context]\nfilesystems=/run/current-system/sw/share/X11/fonts:ro;~/.local/share/color-schemes:ro;xdg-config/gtk-3.0:ro;/nix/store:ro;~/.icons:ro";
+      ".icons/breeze_cursors".source = config.lib.file.mkOutOfStoreSymlink
+        "/run/current-system/sw/share/icons/breeze_cursors";
+      ".local/share/flatpak/overrides/global".text = ''
+        [Context]
+        filesystems=/run/current-system/sw/share/X11/fonts:ro;~/.local/share/color-schemes:ro;xdg-config/gtk-3.0:ro;/nix/store:ro;~/.icons:ro'';
     };
     packages = with pkgs; [ nix-your-shell ];
   };
 
-  fonts.fontconfig.enable = true; # Allow fonts installed by home-manager to be available session wide
+  fonts.fontconfig.enable =
+    true; # Allow fonts installed by home-manager to be available session wide
 
   gtk = {
     enable = true;
-    font = { name = "Inter"; size = 10; };
-    theme = { package = pkgs.breeze-gtk; name = "Breeze"; };
-    iconTheme = { package = pkgs.breeze-icons; name = "Breeze"; };
+    font = {
+      name = "Inter";
+      size = 10;
+    };
+    theme = {
+      package = pkgs.breeze-gtk;
+      name = "Breeze";
+    };
+    iconTheme = {
+      package = pkgs.breeze-icons;
+      name = "Breeze";
+    };
   };
 
-  services = {
-    kdeconnect.enable = true;
-  };
+  services = { kdeconnect.enable = true; };
 
   xdg = {
     enable = true;

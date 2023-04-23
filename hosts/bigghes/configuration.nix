@@ -1,10 +1,7 @@
 { inputs, config, pkgs, ... }:
 
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-    ];
+  imports = [ ./hardware-configuration.nix ];
 
   boot = {
     plymouth.enable = true;
@@ -83,27 +80,24 @@
       enable = true;
       layout = "us";
       xkbVariant = "altgr-intl";
-      excludePackages = ( with pkgs; [ xterm ]);
-      desktopManager.plasma5.enable     = true;
+      excludePackages = (with pkgs; [ xterm ]);
+      desktopManager.plasma5.enable = true;
       displayManager = {
         defaultSession = "plasmawayland";
         sddm = {
           enable = true;
           autoNumlock = true;
           settings = {
-            Theme = {
-              CursorTheme = "breeze_cursors";
-            };
-            X11 = {
-              UserAuthFile = ".local/share/sddm/Xauthority";
-            };
+            Theme = { CursorTheme = "breeze_cursors"; };
+            X11 = { UserAuthFile = ".local/share/sddm/Xauthority"; };
           };
         };
       };
     };
   };
 
-  security.rtkit.enable = true; # Needed for pipewire to acquire realtime priority
+  security.rtkit.enable =
+    true; # Needed for pipewire to acquire realtime priority
 
   nix = {
     extraOptions = "experimental-features = nix-command flakes";
@@ -158,10 +152,12 @@
       wget
     ];
     sessionVariables = rec {
-      KDEHOME = "$XDG_CONFIG_HOME/kde4"; # Stops kde from placing a .kde4 folder in the home dir
+      KDEHOME =
+        "$XDG_CONFIG_HOME/kde4"; # Stops kde from placing a .kde4 folder in the home dir
       NIXOS_OZONE_WL = "1";
     };
-    plasma5.excludePackages = ( with pkgs.plasma5Packages; [ elisa oxygen khelpcenter ]);
+    plasma5.excludePackages =
+      (with pkgs.plasma5Packages; [ elisa oxygen khelpcenter ]);
     etc."channels/nixpkgs".source = inputs.nixpkgs.outPath;
   };
 
@@ -193,15 +189,13 @@
       isNormalUser = true;
       description = "Gabriel";
       shell = pkgs.fish;
-      extraGroups = [
-        "networkmanager"
-        "wheel"
-      ];
+      extraGroups = [ "networkmanager" "wheel" ];
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKcwF1yuWEfYGScNocEbs0AmGxyTIzGc4/IhpU587SJE"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA1v3+q3EaruiiStWjubEJWvtejam/r41uoOpCdwJtLL"
       ];
-      hashedPassword = "$6$c8/6SMBcsDP1Rht4$s7wsVJRKCsuQhtkG6kQzu/HMtW.fBItcZwL5/5w2D8RgBrIN4HGR0IT.AXtSSoTU.kjfeeBAOBm2GEB2ijciP0";
+      hashedPassword =
+        "$6$c8/6SMBcsDP1Rht4$s7wsVJRKCsuQhtkG6kQzu/HMtW.fBItcZwL5/5w2D8RgBrIN4HGR0IT.AXtSSoTU.kjfeeBAOBm2GEB2ijciP0";
     };
     root = {
       shell = pkgs.fish;
