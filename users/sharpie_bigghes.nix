@@ -151,9 +151,5 @@
       enable = true;
       diff-so-fancy.enable = true;
     };
-    mangohud = {
-      enable            = true;
-      enableSessionWide = true;
-    };
   };
 }

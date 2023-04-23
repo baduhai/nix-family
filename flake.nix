@@ -22,7 +22,7 @@
     };
   };
 
-  outputs = inputs @ { self, nixpkgs, home-manager, nixos-hardware, deploy-rs, ... }: {
+  outputs = inputs @ { self, nixpkgs, home-manager, dotfiles, nixos-hardware, deploy-rs, ... }: {
     nixosConfigurations = {
       bigghes = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -34,6 +34,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.sharpie = import ./users/sharpie_bigghes.nix;
+            home-manager.extraSpecialArgs = {inherit inputs;};
           }
         ];
       };

@@ -13,7 +13,7 @@
     supportedFilesystems = [ "ntfs" ];
     loader = {
       timeout = 1;
-      systemd-boot - {
+      systemd-boot = {
         enable = true;
         editor = false;
       };
@@ -84,10 +84,7 @@
       layout = "us";
       xkbVariant = "altgr-intl";
       excludePackages = ( with pkgs; [ xterm ]);
-      desktopManager.plasma5 = {
-        enable     = true;
-        excludePackages = ( with pkgs.plasma5Packages; [ elisa oxygen khelpcenter ]);
-      };
+      desktopManager.plasma5.enable     = true;
       displayManager = {
         defaultSession = "plasmawayland";
         sddm = {
@@ -164,11 +161,13 @@
       KDEHOME = "$XDG_CONFIG_HOME/kde4"; # Stops kde from placing a .kde4 folder in the home dir
       NIXOS_OZONE_WL = "1";
     };
+    plasma5.excludePackages = ( with pkgs.plasma5Packages; [ elisa oxygen khelpcenter ]);
     etc."channels/nixpkgs".source = inputs.nixpkgs.outPath;
   };
 
   programs = {
     steam.enable = true;
+    fish.enable = true;
     dconf.enable = true;
     kdeconnect.enable = true;
     partition-manager.enable = true;
