@@ -27,15 +27,18 @@
       nixosConfigurations = {
         bigghes = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
           modules = [
             ./hosts/bigghes/configuration.nix
             nixos-hardware.nixosModules.dell-xps-13-9360
             home-manager.nixosModules.home-manager
             {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.sharpie = import ./users/sharpie_bigghes.nix;
-              home-manager.extraSpecialArgs = { inherit inputs; };
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.sharpie = import ./users/sharpie_bigghes.nix;
+                extraSpecialArgs = { inherit inputs; };
+              };
             }
           ];
         };
