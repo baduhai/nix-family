@@ -134,6 +134,7 @@
       aspellDicts.pt_BR
       bat
       bind
+      discover
       fd
       filelight
       firefox-wayland # Until firefox moves to using wayland by default
