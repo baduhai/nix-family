@@ -5,7 +5,7 @@
 
   boot = {
     plymouth.enable = true;
-    # initrd.systemd.enable = true;
+    initrd.systemd.enable = true;
     kernelPackages = pkgs.linuxPackages_xanmod_latest;
     supportedFilesystems = [ "ntfs" ];
     loader = {
@@ -36,13 +36,11 @@
     networkmanager.enable = true;
   };
 
-  sound.enable = true;
   hardware = {
     bluetooth.enable = true;
     xpadneo.enable = true;
-    opengl.driSupport32Bit = true; # For OpenGL games
+    graphics.enable32Bit = true; # For OpenGL games
     steam-hardware.enable = true; # Allow steam client to manage controllers
-    pulseaudio.enable = false; # Use pipewire instead
   };
 
   time.timeZone = "America/Bahia";
@@ -77,23 +75,20 @@
       wireplumber.enable = true;
     };
     xserver = {
-      enable = true;
-      layout = "us";
-      xkbVariant = "altgr-intl";
-      excludePackages = (with pkgs; [ xterm ]);
-      desktopManager.plasma5.enable = true;
-      displayManager = {
-        defaultSession = "plasmawayland";
-        sddm = {
-          enable = true;
-          autoNumlock = true;
-          settings = {
-            Theme = { CursorTheme = "breeze_cursors"; };
-            X11 = { UserAuthFile = ".local/share/sddm/Xauthority"; };
-          };
-        };
-      };
+      displayManager.gdm.enable = true;
+      desktopManager.gnome.enable = true;
     };
+    # desktopManager.plasma6.enable = true;
+    # displayManager = {
+    #   sddm = {
+    #     enable = true;
+    #     autoNumlock = true;
+    #     wayland = {
+    #       enable = true;
+    #       compositor = "kwin";
+    #     };
+    #   };
+    # };
   };
 
   security.rtkit.enable =
@@ -125,25 +120,45 @@
   };
 
   environment = {
+    gnome.excludePackages = (with pkgs; [
+      atomix
+      baobab
+      cheese
+      epiphany
+      evince
+      geary
+      gnome-characters
+      gnome-connections
+      gnome-contacts
+      gnome-logs
+      gnome-maps
+      gnome-music
+      gnome-tour
+      gnome-weather
+      hitori
+      iagno
+      seahorse
+      simple-scan
+      snapshot
+      tali
+      totem
+      yelp
+    ]);
     systemPackages = with pkgs; [
-      ark
-      aspell
-      aspellDicts.de
-      aspellDicts.en
-      aspellDicts.en-computers
-      aspellDicts.pt_BR
+      adw-gtk3
       bat
       bind
-      discover
       fd
-      filelight
-      firefox-wayland # Until firefox moves to using wayland by default
       fzf
       git
-      kate
-      kolourpaint
-      libreoffice-qt
+      gnome-tweaks
+      helix
+      # kdePackages.ark
+      # kdePackages.filelight
+      # kdePackages.kate
+      # kdePackages.kolourpaint
       mangohud
+      morewaita-icon-theme
       micro
       neofetch
       steam-run
@@ -153,12 +168,10 @@
       wget
     ];
     sessionVariables = rec {
-      KDEHOME =
-        "$XDG_CONFIG_HOME/kde4"; # Stops kde from placing a .kde4 folder in the home dir
+      # KDEHOME =
+      #   "$XDG_CONFIG_HOME/kde4"; # Stops kde from placing a .kde4 folder in the home dir
       NIXOS_OZONE_WL = "1";
     };
-    plasma5.excludePackages =
-      (with pkgs.plasma5Packages; [ elisa oxygen khelpcenter ]);
     etc."channels/nixpkgs".source = inputs.nixpkgs.outPath;
   };
 
@@ -166,22 +179,16 @@
     steam.enable = true;
     fish.enable = true;
     dconf.enable = true;
-    kdeconnect.enable = true;
-    partition-manager.enable = true;
-    gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-      pinentryFlavor = "qt";
-    };
+    # kdeconnect.enable = true;
+    # partition-manager.enable = true;
   };
 
   fonts = {
     fontDir.enable = true;
     fontconfig.enable = true;
-    fonts = with pkgs; [
+    packages = with pkgs; [
       inter
       roboto
-      (nerdfonts.override { fonts = [ "Hack" ]; })
     ];
   };
 

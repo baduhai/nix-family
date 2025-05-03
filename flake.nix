@@ -4,16 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    home-manager = {
-      url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    dotfiles = {
-      url = "github:baduhai/dotfiles";
-      flake = false;
-    };
-
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     deploy-rs = {
@@ -22,24 +12,22 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, dotfiles, nixos-hardware
-    , deploy-rs, ... }: {
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nixos-hardware,
+      deploy-rs,
+      ...
+    }:
+    {
       nixosConfigurations = {
         bigghes = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
           modules = [
-            ./hosts/bigghes/configuration.nix
+            ./bigghes/configuration.nix
             nixos-hardware.nixosModules.dell-xps-13-9360
-            home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                users.sharpie = import ./users/sharpie_bigghes.nix;
-                extraSpecialArgs = { inherit inputs; };
-              };
-            }
           ];
         };
       };
@@ -54,8 +42,7 @@
             hostname = "100.78.234.41";
             profiles.system = {
               remoteBuild = true;
-              path = deploy-rs.lib.x86_64-linux.activate.nixos
-                self.nixosConfigurations.bigghes;
+              path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.bigghes;
             };
           };
         };
